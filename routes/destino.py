@@ -1,11 +1,12 @@
 # Ejemplo de procesos asincronicos
-from typing import Optional
+from typing import List, Optional
 
 from fastapi import FastAPI, APIRouter, status, Depends, HTTPException
 from pydantic import BaseModel
 from datetime import date
 from psycopg import errors as pg_errors
 from config.conexionDB import get_conexion, app
+from routes.cliente import ClienteOut
 
 router=APIRouter()
 
@@ -18,33 +19,26 @@ class Destino(BaseModel):
 class DestinoOut(Destino):
     destino_id:int
 
-@router.get("/")
-async def listar_o_buscar(destino_id: Optional[int] = None, conn = Depends(get_conexion)):
-    try:
-        async with conn.cursor() as cursor:
-            if destino_id:
-                await cursor.execute("SELECT * FROM destino WHERE destino_id = %s", (destino_id,))
-                res = await cursor.fetchone()
-                return res if res else HTTPException(status_code=404, detail="No encontrado")
-            else:
-                await cursor.execute("SELECT * FROM destino")
-                return await cursor.fetchall()
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Error: {e}")
-
-
-router.get("/destino/{destino_id}/")
-async def obtener_por_id(destino_id: int, conn = Depends(get_conexion)):
-    try:
-        async with conn.cursor() as cursor:
+@router.get("/", response_model=List[DestinoOut])    
+async def listar_o_buscar(destino_id: Optional[int] = None, conn=Depends(get_conexion)):
+    async with conn.cursor() as cursor:
+        if destino_id is not None:
             await cursor.execute("SELECT * FROM destino WHERE destino_id = %s", (destino_id,))
             res = await cursor.fetchone()
-            if res:
-                return res
-            else:
+            if not res:
                 raise HTTPException(status_code=404, detail="No encontrado")
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Error: {e}")
+            return [res]
+        await cursor.execute("SELECT * FROM destino")
+        return await cursor.fetchall()
+
+@router.get("/{destino_id}", response_model=DestinoOut)  
+async def obtener_por_id(destino_id: int, conn=Depends(get_conexion)):
+    async with conn.cursor() as cursor:
+        await cursor.execute("SELECT * FROM destino WHERE destino_id = %s", (destino_id,))
+        res = await cursor.fetchone()
+        if not res:
+            raise HTTPException(status_code=404, detail="No encontrado")
+        return res
 
 
 from fastapi import HTTPException, status, Depends
@@ -72,3 +66,27 @@ async def crear_destino(data: Destino, conn = Depends(get_conexion)):
         print(f"Error imprevisto al crear: {e}")
         await conn.rollback()
         raise HTTPException(status_code=400, detail="La creación no se efectuó; consulte con su Administrador.")
+
+
+@router.put("/{destino_id}", response_model=DestinoOut, status_code=status.HTTP_200_OK)
+async def actualizar_destino(destino_id: int, data: Destino, conn=Depends(get_conexion)):
+    sql = """
+        UPDATE destino
+        SET nombre = %s
+        WHERE destino_id = %s
+        RETURNING destino_id, nombre
+    """
+    params = (data.nombre, destino_id)
+
+    try:
+        async with conn.cursor() as cur:
+            await cur.execute(sql, params)
+            row = await cur.fetchone()
+            if not row:
+                await conn.rollback()
+                raise HTTPException(status_code=404, detail="Destino no encontrado")
+            await conn.commit()
+            return row
+    except Exception:
+        await conn.rollback()
+        raise HTTPException(status_code=400, detail="No se pudo actualizar el destino")

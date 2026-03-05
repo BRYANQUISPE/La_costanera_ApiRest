@@ -1,5 +1,5 @@
 # Ejemplo de procesos asincronicos
-from typing import Optional
+from typing import Optional, List
 
 from fastapi import FastAPI, APIRouter, status, Depends, HTTPException
 from pydantic import BaseModel
@@ -24,34 +24,27 @@ class Hotel(BaseModel):
 class HotelOut(Hotel):
     hotel_id:int
 
-@router.get("/")
-async def listar_o_buscar(hotel_id: Optional[int] = None, conn = Depends(get_conexion)):
-    try:
-        async with conn.cursor() as cursor:
-            if hotel_id:
-                await cursor.execute("SELECT * FROM hotel WHERE hotel_id = %s", (hotel_id,))
-                res = await cursor.fetchone()
-                return res if res else HTTPException(status_code=404, detail="No encontrado")
-            else:
-                await cursor.execute("SELECT * FROM hotel")
-                return await cursor.fetchall()
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Error: {e}")
-
-
-
-router.get("/hotel/{hotel_id}/")
-async def obtener_por_id(hotel_id: int, conn = Depends(get_conexion)):
-    try:
-        async with conn.cursor() as cursor:
+@router.get("/", response_model=List[HotelOut])    
+async def listar_o_buscar(hotel_id: Optional[int] = None, conn=Depends(get_conexion)):
+    async with conn.cursor() as cursor:
+        if hotel_id is not None:
             await cursor.execute("SELECT * FROM hotel WHERE hotel_id = %s", (hotel_id,))
             res = await cursor.fetchone()
-            if res:
-                return res
-            else:
+            if not res:
                 raise HTTPException(status_code=404, detail="No encontrado")
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Error: {e}")
+            return [res]
+        await cursor.execute("SELECT * FROM hotel")
+        return await cursor.fetchall()
+
+@router.get("/{hotel_id}", response_model=HotelOut)  
+async def obtener_por_id(hotel_id: int, conn=Depends(get_conexion)):
+    async with conn.cursor() as cursor:
+        await cursor.execute("SELECT * FROM hotel WHERE hotel_id = %s", (hotel_id,))
+        res = await cursor.fetchone()
+        if not res:
+            raise HTTPException(status_code=404, detail="No encontrado")
+        return res
+
 
 from fastapi import HTTPException, status, Depends
 from psycopg import errors as pg_errors
@@ -97,3 +90,27 @@ async def crear_hotel(data: Hotel, conn = Depends(get_conexion)):
         print(f"Error imprevisto al crear: {e}")
         await conn.rollback()
         raise HTTPException(status_code=400, detail="La creación no se efectuó; consulte con su Administrador.")
+
+
+@router.put("/{hotel_id}", response_model=HotelOut, status_code=status.HTTP_200_OK)
+async def actualizar_hotel(hotel_id: int, data: Hotel, conn=Depends(get_conexion)):
+    sql = """
+        UPDATE hotel
+        SET proveedor_id = %s, destino_id = %s, nombre = %s
+        WHERE hotel_id = %s
+        RETURNING hotel_id, proveedor_id, destino_id, nombre
+    """
+    params = (data.proveedor_id, data.destino_id, data.nombre, hotel_id)
+
+    try:
+        async with conn.cursor() as cur:
+            await cur.execute(sql, params)
+            row = await cur.fetchone()
+            if not row:
+                await conn.rollback()
+                raise HTTPException(status_code=404, detail="Hotel no encontrado")
+            await conn.commit()
+            return row
+    except Exception:
+        await conn.rollback()
+        raise HTTPException(status_code=400, detail="No se pudo actualizar el hotel")
