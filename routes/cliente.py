@@ -98,3 +98,34 @@ async def actualizar_cliente(cliente_id: int, data: Cliente, conn=Depends(get_co
     except Exception:
         await conn.rollback()
         raise HTTPException(status_code=400, detail="No se pudo actualizar el cliente")
+
+
+
+
+@router.delete("/{cliente_id}", status_code=status.HTTP_200_OK)
+async def eliminar_cliente(
+    cliente_id: int,
+    conn = Depends(get_conexion)
+):
+    consulta = """
+        DELETE FROM cliente
+        WHERE cliente_id = %s
+        RETURNING cliente_id
+    """
+    try:
+        async with conn.cursor() as cursor:
+            await cursor.execute(consulta, (cliente_id,))
+            row = await cursor.fetchone()
+
+            # Si no existe el cliente_id
+            if not row:
+                await conn.rollback()
+                raise HTTPException(status_code=404, detail="Cliente no encontrado")
+
+            await conn.commit()
+            return {"mensaje": f"Cliente {cliente_id} eliminado correctamente"}
+
+    except Exception as e:
+        print(f"Error al eliminar cliente: {e}")
+        await conn.rollback()
+        raise HTTPException(status_code=400, detail="No se pudo eliminar el cliente. Consulte con su Administrador.")

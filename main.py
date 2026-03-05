@@ -1,14 +1,14 @@
 from fastapi import FastAPI, status, Depends, HTTPException
-from routes import cliente, destino, proveedor, usuario, rol, hotel, paquete
+from routes import cliente, destino, proveedor, usuario, rol, hotel, paquete, usuario_rol
 from config.conexionDB import get_conexion, app
 app.include_router(cliente.router, prefix="/cliente")
 app.include_router(destino.router, prefix="/destino")
 app.include_router(proveedor.router, prefix="/proveedor")
 app.include_router(usuario.router, prefix="/usuario")
-app.include_router(usuario.router, prefix="/usuario/{usuario_id}")
 app.include_router(rol.router, prefix="/rol")
 app.include_router(hotel.router, prefix="/hotel")
 app.include_router(paquete.router, prefix="/paquete")
+app.include_router(usuario_rol.router, prefix="/usuario_rol")
 
 from fastapi.middleware.cors import CORSMiddleware
 app.add_middleware(
