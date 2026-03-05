@@ -1,5 +1,5 @@
 # Ejemplo de procesos asincronicos
-from typing import Optional
+from typing import Optional, List
 
 from fastapi import FastAPI, APIRouter, status, Depends, HTTPException
 from pydantic import BaseModel
@@ -21,34 +21,34 @@ class Paquete(BaseModel):
 class PaqueteOut(Paquete):
     paquete_id:int
 
-@router.get("/")
-async def listar_o_buscar(paquete_id: Optional[int] = None, conn = Depends(get_conexion)):
-    try:
-        async with conn.cursor() as cursor:
-            if paquete_id:
-                await cursor.execute("SELECT * FROM paquete WHERE paquete_id = %s", (paquete_id,))
-                res = await cursor.fetchone()
-                return res if res else HTTPException(status_code=404, detail="No encontrado")
-            else:
-                await cursor.execute("SELECT * FROM paquete")
-                return await cursor.fetchall()
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Error: {e}")
-
-
-
-router.get("/paquete/{paquete_id}/")
-async def obtener_por_id(paquete_id: int, conn = Depends(get_conexion)):
-    try:
-        async with conn.cursor() as cursor:
+@router.get("/", response_model=List[PaqueteOut])    
+async def listar_o_buscar(paquete_id: Optional[int] = None, conn=Depends(get_conexion)):
+    async with conn.cursor() as cursor:
+        if paquete_id is not None:
             await cursor.execute("SELECT * FROM paquete WHERE paquete_id = %s", (paquete_id,))
             res = await cursor.fetchone()
-            if res:
-                return res
-            else:
+            if not res:
                 raise HTTPException(status_code=404, detail="No encontrado")
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Error: {e}")
+            return [res]
+        await cursor.execute("SELECT * FROM paquete")
+        return await cursor.fetchall()
+
+@router.get("/{paquete_id}", response_model=PaqueteOut)  
+async def obtener_por_id(paquete_id: int, conn=Depends(get_conexion)):
+    async with conn.cursor() as cursor:
+        await cursor.execute("SELECT * FROM paquete WHERE paquete_id = %s", (paquete_id,))
+        res = await cursor.fetchone()
+        if not res:
+            raise HTTPException(status_code=404, detail="No encontrado")
+        return res
+
+
+@router.get("/por-destino/{destino_id}")
+async def paquetes_por_destino(destino_id: int, conn=Depends(get_conexion)):
+    async with conn.cursor() as cur:
+        await cur.execute("SELECT * FROM paquete WHERE destino_id=%s ORDER BY paquete_id", (destino_id,))
+        return await cur.fetchall()
+
 
 from fastapi import HTTPException, status, Depends
 from psycopg import errors as pg_errors
@@ -87,3 +87,28 @@ async def crear_paquete(data: Paquete, conn = Depends(get_conexion)):
         print(f"Error imprevisto al crear: {e}")
         await conn.rollback()
         raise HTTPException(status_code=400, detail="La creación no se efectuó; consulte con su Administrador.")
+    
+
+
+@router.put("/{paquete_id}", response_model=PaqueteOut, status_code=status.HTTP_200_OK)
+async def actualizar_paquete(paquete_id: int, data: Paquete, conn=Depends(get_conexion)):
+    sql = """
+        UPDATE paquete
+        SET destino_id = %s, nombre = %s, precio = %s
+        WHERE paquete_id = %s
+        RETURNING paquete_id, destino_id, nombre, precio
+    """
+    params = (data.destino_id, data.nombre, data.precio, paquete_id)
+
+    try:
+        async with conn.cursor() as cur:
+            await cur.execute(sql, params)
+            row = await cur.fetchone()
+            if not row:
+                await conn.rollback()
+                raise HTTPException(status_code=404, detail="Hotel no encontrado")
+            await conn.commit()
+            return row
+    except Exception:
+        await conn.rollback()
+        raise HTTPException(status_code=400, detail="No se pudo actualizar el hotel")

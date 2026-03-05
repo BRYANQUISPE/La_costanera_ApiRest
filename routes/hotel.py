@@ -44,6 +44,23 @@ async def obtener_por_id(hotel_id: int, conn=Depends(get_conexion)):
         if not res:
             raise HTTPException(status_code=404, detail="No encontrado")
         return res
+    
+
+@router.get("/por-proveedor/{proveedor_id}")
+async def hoteles_por_proveedor(proveedor_id: int, conn=Depends(get_conexion)):
+    async with conn.cursor() as cur:
+        await cur.execute("SELECT * FROM hotel WHERE proveedor_id=%s ORDER BY hotel_id", (proveedor_id,))
+        rows = await cur.fetchall()
+        return rows
+
+
+@router.get("/por-destino/{destino_id}")
+async def hoteles_por_destino(destino_id: int, conn=Depends(get_conexion)):
+    async with conn.cursor() as cur:
+        await cur.execute("SELECT * FROM hotel WHERE destino_id=%s ORDER BY hotel_id", (destino_id,))
+        rows = await cur.fetchall()
+        return rows
+
 
 
 from fastapi import HTTPException, status, Depends

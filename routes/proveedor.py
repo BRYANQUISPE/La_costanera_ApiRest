@@ -1,5 +1,5 @@
 # Ejemplo de procesos asincronicos
-from typing import Optional
+from typing import Optional, List
 
 from fastapi import FastAPI, APIRouter, status, Depends, HTTPException
 from pydantic import BaseModel
@@ -20,33 +20,27 @@ class Proveedor(BaseModel):
 class ProveedorOut(Proveedor):
     proveedor_id:int
 
-@router.get("/")
-async def listar_o_buscar(proveedor_id: Optional[int] = None, conn = Depends(get_conexion)):
-    try:
-        async with conn.cursor() as cursor:
-            if proveedor_id:
-                await cursor.execute("SELECT * FROM proveedor WHERE proveedor_id = %s", (proveedor_id,))
-                res = await cursor.fetchone()
-                return res if res else HTTPException(status_code=404, detail="No encontrado")
-            else:
-                await cursor.execute("SELECT * FROM proveedor")
-                return await cursor.fetchall()
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Error: {e}")
-
-
-router.get("/proveedor/{proveedor_id}/")
-async def obtener_por_id(proveedor_id: int, conn = Depends(get_conexion)):
-    try:
-        async with conn.cursor() as cursor:
+@router.get("/", response_model=List[ProveedorOut])    
+async def listar_o_buscar(proveedor_id: Optional[int] = None, conn=Depends(get_conexion)):
+    async with conn.cursor() as cursor:
+        if proveedor_id is not None:
             await cursor.execute("SELECT * FROM proveedor WHERE proveedor_id = %s", (proveedor_id,))
             res = await cursor.fetchone()
-            if res:
-                return res
-            else:
+            if not res:
                 raise HTTPException(status_code=404, detail="No encontrado")
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Error: {e}")
+            return [res]
+        await cursor.execute("SELECT * FROM proveedor")
+        return await cursor.fetchall()
+
+@router.get("/{proveedor_id}", response_model=ProveedorOut)  
+async def obtener_por_id(proveedor_id: int, conn=Depends(get_conexion)):
+    async with conn.cursor() as cursor:
+        await cursor.execute("SELECT * FROM proveedor WHERE proveedor_id = %s", (proveedor_id,))
+        res = await cursor.fetchone()
+        if not res:
+            raise HTTPException(status_code=404, detail="No encontrado")
+        return res
+        
 
 
 from fastapi import HTTPException, status, Depends
@@ -74,3 +68,28 @@ async def crear_proveedor(data: Proveedor, conn = Depends(get_conexion)):
         print(f"Error imprevisto al crear: {e}")
         await conn.rollback()
         raise HTTPException(status_code=400, detail="La creación no se efectuó; consulte con su Administrador.")
+    
+
+
+@router.put("/{proveedor_id}", response_model=ProveedorOut, status_code=status.HTTP_200_OK)
+async def actualizar_proveedor(proveedor_id: int, data: Proveedor, conn=Depends(get_conexion)):
+    sql = """
+        UPDATE proveedor
+        SET nombre = %s, telefono = %s, email = %s
+        WHERE proveedor_id = %s
+        RETURNING proveedor_id, nombre, telefono, email
+    """
+    params = (data.nombre, data.telefono, data.email, proveedor_id)
+
+    try:
+        async with conn.cursor() as cur:
+            await cur.execute(sql, params)
+            row = await cur.fetchone()
+            if not row:
+                await conn.rollback()
+                raise HTTPException(status_code=404, detail="Proveedor no encontrado")
+            await conn.commit()
+            return row
+    except Exception:
+        await conn.rollback()
+        raise HTTPException(status_code=400, detail="No se pudo actualizar el proveedor")
