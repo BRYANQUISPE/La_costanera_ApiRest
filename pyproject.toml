@@ -1,0 +1,12 @@
+[project]
+name = "ejercicio"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.133.0",
+    "psycopg[binary]>=3.3.3",
+    "pycopg[binary-pool]>=0.3.0",
+    "uvicorn[standard]>=0.41.0",
+]
