@@ -92,6 +92,7 @@ async def crear_paquete(data: Paquete, conn = Depends(get_conexion)):
 
 @router.put("/{paquete_id}", response_model=PaqueteOut, status_code=status.HTTP_200_OK)
 async def actualizar_paquete(paquete_id: int, data: Paquete, conn=Depends(get_conexion)):
+    print(f"Intentando actualizar paquete {paquete_id} con datos: {data}")
     sql = """
         UPDATE paquete
         SET destino_id = %s, nombre = %s, precio = %s
