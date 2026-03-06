@@ -93,3 +93,32 @@ async def actualizar_proveedor(proveedor_id: int, data: Proveedor, conn=Depends(
     except Exception:
         await conn.rollback()
         raise HTTPException(status_code=400, detail="No se pudo actualizar el proveedor")
+    
+
+
+@router.delete("/{proveedor_id}", status_code=status.HTTP_200_OK)
+async def eliminar_proveedor(
+    proveedor_id: int,
+    conn = Depends(get_conexion)
+):
+    consulta = """
+        DELETE FROM proveedor
+        WHERE proveedor_id = %s
+        RETURNING proveedor_id
+    """
+    try:
+        async with conn.cursor() as cursor:
+            await cursor.execute(consulta, (proveedor_id,))
+            row = await cursor.fetchone()
+
+            if not row:
+                await conn.rollback()
+                raise HTTPException(status_code=404, detail="Proveedor no encontrado")
+
+            await conn.commit()
+            return {"mensaje": f"Proveedor {proveedor_id} eliminado correctamente"}
+
+    except Exception as e:
+        print(f"Error al eliminar proveedor: {e}")
+        await conn.rollback()
+        raise HTTPException(status_code=400, detail="No se pudo eliminar el proveedor. Consulte con su Administrador.")    

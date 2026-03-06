@@ -131,3 +131,32 @@ async def actualizar_hotel(hotel_id: int, data: Hotel, conn=Depends(get_conexion
     except Exception:
         await conn.rollback()
         raise HTTPException(status_code=400, detail="No se pudo actualizar el hotel")
+
+
+
+@router.delete("/{hotel_id}", status_code=status.HTTP_200_OK)
+async def eliminar_hotel(
+    hotel_id: int,
+    conn = Depends(get_conexion)
+):
+    consulta = """
+        DELETE FROM hotel
+        WHERE hotel_id = %s
+        RETURNING hotel_id
+    """
+    try:
+        async with conn.cursor() as cursor:
+            await cursor.execute(consulta, (hotel_id,))
+            row = await cursor.fetchone()
+
+            if not row:
+                await conn.rollback()
+                raise HTTPException(status_code=404, detail="Hotel no encontrado")
+
+            await conn.commit()
+            return {"mensaje": f"Hotel {hotel_id} eliminado correctamente"}
+
+    except Exception as e:
+        print(f"Error al eliminar hotel: {e}")
+        await conn.rollback()
+        raise HTTPException(status_code=400, detail="No se pudo eliminar el hotel. Consulte con su Administrador.")                

@@ -91,3 +91,32 @@ async def actualizar_rol(rol_id: int, data: Rol, conn=Depends(get_conexion)):
     except Exception:
         await conn.rollback()
         raise HTTPException(status_code=400, detail="No se pudo actualizar el rol")
+
+
+
+@router.delete("/{rol_id}", status_code=status.HTTP_200_OK)
+async def eliminar_rol(
+    rol_id: int,
+    conn = Depends(get_conexion)
+):
+    consulta = """
+        DELETE FROM rol
+        WHERE rol_id = %s
+        RETURNING rol_id
+    """
+    try:
+        async with conn.cursor() as cursor:
+            await cursor.execute(consulta, (rol_id,))
+            row = await cursor.fetchone()
+
+            if not row:
+                await conn.rollback()
+                raise HTTPException(status_code=404, detail="Rol no encontrado")
+
+            await conn.commit()
+            return {"mensaje": f"Rol {rol_id} eliminado correctamente"}
+
+    except Exception as e:
+        print(f"Error al eliminar rol: {e}")
+        await conn.rollback()
+        raise HTTPException(status_code=400, detail="No se pudo eliminar el rol. Consulte con su Administrador.")    

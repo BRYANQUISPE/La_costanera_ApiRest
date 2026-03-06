@@ -112,3 +112,32 @@ async def actualizar_paquete(paquete_id: int, data: Paquete, conn=Depends(get_co
     except Exception:
         await conn.rollback()
         raise HTTPException(status_code=400, detail="No se pudo actualizar el hotel")
+
+
+
+@router.delete("/{paquete_id}", status_code=status.HTTP_200_OK)
+async def eliminar_paquete(
+    paquete_id: int,
+    conn = Depends(get_conexion)
+):
+    consulta = """
+        DELETE FROM paquete
+        WHERE paquete_id = %s
+        RETURNING paquete_id
+    """
+    try:
+        async with conn.cursor() as cursor:
+            await cursor.execute(consulta, (paquete_id,))
+            row = await cursor.fetchone()
+
+            if not row:
+                await conn.rollback()
+                raise HTTPException(status_code=404, detail="Paquete no encontrado")
+
+            await conn.commit()
+            return {"mensaje": f"Paquete {paquete_id} eliminado correctamente"}
+
+    except Exception as e:
+        print(f"Error al eliminar paquete: {e}")
+        await conn.rollback()
+        raise HTTPException(status_code=400, detail="No se pudo eliminar el paquete. Consulte con su Administrador.")                        

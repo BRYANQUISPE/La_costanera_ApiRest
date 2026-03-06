@@ -90,3 +90,32 @@ async def actualizar_destino(destino_id: int, data: Destino, conn=Depends(get_co
     except Exception:
         await conn.rollback()
         raise HTTPException(status_code=400, detail="No se pudo actualizar el destino")
+
+
+@router.delete("/{destino_id}", status_code=status.HTTP_200_OK)
+async def eliminar_destino(
+    destino_id: int,
+    conn = Depends(get_conexion)
+):
+    consulta = """
+        DELETE FROM destino
+        WHERE destino_id = %s
+        RETURNING destino_id
+    """
+    try:
+        async with conn.cursor() as cursor:
+            await cursor.execute(consulta, (destino_id,))
+            row = await cursor.fetchone()
+
+            # Si no existe el destino_id
+            if not row:
+                await conn.rollback()
+                raise HTTPException(status_code=404, detail="Destino no encontrado")
+
+            await conn.commit()
+            return {"mensaje": f"Destino {destino_id} eliminado correctamente"}
+
+    except Exception as e:
+        print(f"Error al eliminar destino: {e}")
+        await conn.rollback()
+        raise HTTPException(status_code=400, detail="No se pudo eliminar el destino. Consulte con su Administrador.")        
