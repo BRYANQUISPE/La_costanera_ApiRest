@@ -129,3 +129,6 @@ async def eliminar_cliente(
         print(f"Error al eliminar cliente: {e}")
         await conn.rollback()
         raise HTTPException(status_code=400, detail="No se pudo eliminar el cliente. Consulte con su Administrador.")
+
+
+//La costanera es la mejor
