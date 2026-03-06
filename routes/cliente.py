@@ -131,4 +131,3 @@ async def eliminar_cliente(
         raise HTTPException(status_code=400, detail="No se pudo eliminar el cliente. Consulte con su Administrador.")
 
 
-//La costanera es la mejor

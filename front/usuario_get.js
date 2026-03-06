@@ -1,14 +1,13 @@
-const url="http://127.0.0.1:8000/personal/"
+const url="http://127.0.0.1:8000/usuario/"
 const contenedor=document.getElementById('data')
 const cargaData = (datos) => {
     let resultado = '';
     for (let i=0; i<datos.length; i++) {
        resultado += `<li>
-    <p> usuario_id: ${datos[i].usuario_id} </p>
-    <p> nombres: ${datos[i].nombres} </p>
-    <p> apellidos: ${datos[i].apellidos} </p>
-    <p> cargo: ${datos[i].cargo} </p>
-    <p> telefono: ${datos[i].telefono} </p>
+    <p> usuario_id: ${datos[i].usuario_id} </p>   
+    <p> nombre_usuario: ${datos[i].nombre_usuario} </p>
+    <p> hash_password: ${datos[i].hash_password} </p>
+    
 
     </li>`;
     }
