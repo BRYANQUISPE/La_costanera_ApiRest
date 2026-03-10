@@ -1,62 +1,85 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clientes</title>
+    <title>Clientes - La Costanera</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles-base.css">
+    <style>
+        /* Estilos adicionales específicos para clientes */
+        .stats-card {
+            background: linear-gradient(135deg, var(--primary), var(--dark));
+            color: white;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-item .number {
+            font-size: 2em;
+            font-weight: bold;
+        }
+        
+        .stat-item .label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+    </style>
 </head>
-<style>
-    body {
-        background-color: yellow;
-    }
-    #data {
-    list-style: none;
-    padding: 0;
-    max-width: 600px;
-    margin: 20px auto;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-}
-
-#data li {
-    background: white;
-    margin-bottom: 12px;
-    padding: 16px;
-    border-left: 4px solid #007bff;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    transition: box-shadow 0.3s ease;
-}
-
-#data li:hover {
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-#data li p {
-    margin: 6px 0;
-    color: #2c3e50;
-    display: flex;
-    justify-content: space-between;
-    border-bottom: 1px dotted #ecf0f1;
-    padding-bottom: 4px;
-}
-
-#data li p:after {
-    content: attr(data-value);
-    font-weight: 500;
-    color: #007bff;
-}
-</style>
 <body>
-    <div id="listado">
-        <ul id="data">
-
-        </ul>
-       
+    <div class="container">
+        <h1>
+            <i class="fas fa-users"></i>
+            Gestión de Clientes
+        </h1>
+        
+        <!-- Barra de búsqueda mejorada -->
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="🔍 Buscar por nombre, CI o email...">
+            <select id="searchField">
+                <option value="todos">Todos los campos</option>
+                <option value="nombre">Nombre</option>
+                <option value="ci">CI</option>
+                <option value="email">Email</option>
+            </select>
+            <button onclick="buscarClientes()">
+                <i class="fas fa-search"></i> Buscar
+            </button>
+            <button onclick="limpiarBusqueda()" style="background: var(--accent); color: var(--dark);">
+                <i class="fas fa-times"></i> Limpiar
+            </button>
+        </div>
+        
+        <!-- Estadísticas rápidas -->
+        <div class="stats-card" id="stats">
+            <div class="stat-item">
+                <div class="number" id="totalClientes">0</div>
+                <div class="label">Total Clientes</div>
+            </div>
+            <div class="stat-item">
+                <div class="number" id="clientesActivos">0</div>
+                <div class="label">Con Reservas</div>
+            </div>
+            <div class="stat-item">
+                <div class="number" id="clientesVIP">0</div>
+                <div class="label">Clientes VIP</div>
+            </div>
+        </div>
+        
+        <!-- Lista de clientes -->
+        <div id="listado">
+            <ul id="data"></ul>
+        </div>
     </div>
-    <ul>
-  
-</ul>
-<script src="cliente_get.js">
     
-</script>
+    <script src="cliente_get.js"></script>
 </body>
 </html>

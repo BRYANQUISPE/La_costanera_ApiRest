@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuevo Pago - La Costanera</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles-base.css">
+    <style>
+        .info-box {
+            background: var(--light);
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        
+        .info-box i {
+            color: var(--primary);
+            margin-right: 10px;
+        }
+        
+        .fecha-actual {
+            background: var(--accent);
+            color: var(--dark);
+            padding: 8px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+        }
+        
+        .monto-sugerido {
+            background: #e8f5e9;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .monto-sugerido i {
+            color: var(--success);
+            font-size: 1.2em;
+        }
+        
+        .metodos-pago {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .metodo-btn {
+            padding: 10px;
+            border: 2px solid var(--accent);
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        
+        .metodo-btn:hover {
+            background: var(--accent);
+        }
+        
+        .metodo-btn.seleccionado {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>
+            <i class="fas fa-plus-circle"></i>
+            Nuevo Pago
+        </h1>
+        
+        <div class="fecha-actual">
+            <i class="fas fa-calendar"></i> 
+            Fecha actual: <span id="fechaActual"></span>
+        </div>
+        
+        <form id="FormularioData">
+            <div class="info-box">
+                <i class="fas fa-info-circle"></i>
+                Complete los datos para registrar un nuevo pago
+            </div>
+            
+            <label for="reserva_id">
+                <i class="fas fa-calendar-check"></i> ID Reserva:
+            </label>
+            <input type="number" id="reserva_id" name="reserva_id" required 
+                   placeholder="Ingrese el ID de la reserva" min="1">
+            
+            <label for="monto">
+                <i class="fas fa-money-bill-wave"></i> Monto (Bs):
+            </label>
+            <input type="number" id="monto" name="monto" required 
+                   placeholder="Ingrese el monto del pago" min="1" step="1">
+            
+            <!-- Sugerencia de monto (esto se puede conectar con el backend) -->
+            <div class="monto-sugerido" id="sugerenciaMonto" style="display: none;">
+                <i class="fas fa-info-circle"></i>
+                <span>Monto sugerido para esta reserva: <strong id="montoSugerido">Bs 0</strong></span>
+            </div>
+            
+            <label for="fecha_pago">
+                <i class="fas fa-calendar"></i> Fecha de Pago:
+            </label>
+            <input type="date" id="fecha_pago" name="fecha_pago" required>
+            
+            <div class="info-box" style="margin-top: 30px;">
+                <i class="fas fa-lightbulb"></i>
+                <strong>Nota:</strong> El monto debe ser mayor a 0
+            </div>
+            
+            <button type="submit">
+                <i class="fas fa-save"></i> Registrar Pago
+            </button>
+        </form>
+    </div>
+    
+    <script src="pago_post.js"></script>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuevo Comprobante - La Costanera</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles-base.css">
+    <style>
+        .info-box {
+            background: var(--light);
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        
+        .info-box i {
+            color: var(--primary);
+            margin-right: 10px;
+        }
+        
+        .fecha-actual {
+            background: var(--accent);
+            color: var(--dark);
+            padding: 8px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+        }
+        
+        .pago-info {
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .pago-info i {
+            color: var(--success);
+            font-size: 1.5em;
+        }
+        
+        .pago-detalle {
+            flex: 1;
+        }
+        
+        .pago-detalle p {
+            margin: 5px 0;
+        }
+        
+        .comprobante-preview {
+            background: white;
+            border: 2px dashed var(--accent);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .comprobante-preview i {
+            font-size: 3em;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .comprobante-preview h3 {
+            margin: 10px 0;
+            color: var(--dark);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>
+            <i class="fas fa-file-invoice"></i>
+            Nuevo Comprobante
+        </h1>
+        
+        <div class="fecha-actual">
+            <i class="fas fa-calendar"></i> 
+            Fecha actual: <span id="fechaActual"></span>
+        </div>
+        
+        <form id="FormularioData">
+            <div class="info-box">
+                <i class="fas fa-info-circle"></i>
+                Complete los datos para generar un nuevo comprobante
+            </div>
+            
+            <label for="pago_id">
+                <i class="fas fa-credit-card"></i> ID Pago:
+            </label>
+            <input type="number" id="pago_id" name="pago_id" required 
+                   placeholder="Ingrese el ID del pago" min="1">
+            
+            <!-- Información del pago (se carga automáticamente) -->
+            <div class="pago-info" id="pagoInfo" style="display: none;">
+                <i class="fas fa-check-circle"></i>
+                <div class="pago-detalle">
+                    <p><strong>Pago ID:</strong> <span id="infoPagoId"></span></p>
+                    <p><strong>Monto:</strong> <span id="infoMonto"></span></p>
+                    <p><strong>Fecha Pago:</strong> <span id="infoFechaPago"></span></p>
+                </div>
+            </div>
+            
+            <label for="fecha_emision">
+                <i class="fas fa-calendar"></i> Fecha de Emisión:
+            </label>
+            <input type="date" id="fecha_emision" name="fecha_emision" required>
+            
+            <!-- Vista previa del comprobante -->
+            <div class="comprobante-preview">
+                <i class="fas fa-file-invoice"></i>
+                <h3>Comprobante #<span id="previewId">Nuevo</span></h3>
+                <p>Asociado al pago <span id="previewPagoId">---</span></p>
+                <p>Fecha de emisión: <span id="previewFecha">---</span></p>
+            </div>
+            
+            <div class="info-box" style="margin-top: 30px;">
+                <i class="fas fa-lightbulb"></i>
+                <strong>Nota:</strong> El comprobante se generará automáticamente con un ID único
+            </div>
+            
+            <button type="submit">
+                <i class="fas fa-save"></i> Generar Comprobante
+            </button>
+        </form>
+    </div>
+    
+    <script src="comprobante_post.js"></script>
+</body>
+</html>

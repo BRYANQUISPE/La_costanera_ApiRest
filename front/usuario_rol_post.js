@@ -1,4 +1,4 @@
-const url = "http://127.0.0.1:8000/proveedor/";
+const url = "http://127.0.0.1:8000/usuario_rol/";
 
 FormularioData.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -7,16 +7,13 @@ FormularioData.addEventListener('submit', (e) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            
-            nombre: nombre.value,
-            telefono: telefono.value,
-            email: email.value
-           
+            usuario_id: usuario_id.value,
+            rol_id: rol_id.value
         })
     })
     .then(response => response.json())
     .then(data => {
-        console.log("Proveedor creado:", data);
+        console.log("Usuario y rol creado:", data);
     })
     .catch(error => console.error("Error:", error));
 });

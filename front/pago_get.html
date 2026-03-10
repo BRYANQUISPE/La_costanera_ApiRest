@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagos - La Costanera</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles-base.css">
+    <style>
+        /* Estilos específicos para pagos */
+        .monto-badge {
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .resumen-pagos {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .resumen-card {
+            background: linear-gradient(135deg, var(--primary), var(--dark));
+            color: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .resumen-card::before {
+            content: "💰";
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            font-size: 80px;
+            opacity: 0.2;
+            transform: rotate(15deg);
+        }
+        
+        .resumen-card .numero {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .resumen-card .etiqueta {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .resumen-card.total {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .resumen-card.promedio {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        }
+        
+        .filtros-rango {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+        
+        .filtro-item {
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        .filtro-item label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+            color: var(--dark);
+            font-weight: 600;
+        }
+        
+        .filtro-item input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 2px solid var(--accent);
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .moneda-simbolo {
+            font-size: 0.8em;
+            margin-right: 2px;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>
+            <i class="fas fa-credit-card"></i>
+            Gestión de Pagos
+        </h1>
+        
+        <!-- Barra de búsqueda principal -->
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="🔍 Buscar por ID de pago, reserva o monto...">
+            <select id="searchField">
+                <option value="todos">Todos los campos</option>
+                <option value="pago_id">ID Pago</option>
+                <option value="reserva_id">ID Reserva</option>
+                <option value="monto">Monto</option>
+            </select>
+            <button onclick="buscarPagos()">
+                <i class="fas fa-search"></i> Buscar
+            </button>
+            <button onclick="limpiarBusqueda()" style="background: var(--accent); color: var(--dark);">
+                <i class="fas fa-times"></i> Limpiar
+            </button>
+        </div>
+        
+        <!-- Filtros por rango de fechas y montos -->
+        <div class="filtros-rango">
+            <div class="filtro-item">
+                <label><i class="fas fa-calendar-alt"></i> Fecha Desde:</label>
+                <input type="date" id="fechaDesde">
+            </div>
+            <div class="filtro-item">
+                <label><i class="fas fa-calendar-alt"></i> Fecha Hasta:</label>
+                <input type="date" id="fechaHasta">
+            </div>
+            <div class="filtro-item">
+                <label><i class="fas fa-coins"></i> Monto Mínimo:</label>
+                <input type="number" id="montoMin" placeholder="0" min="0">
+            </div>
+            <div class="filtro-item">
+                <label><i class="fas fa-coins"></i> Monto Máximo:</label>
+                <input type="number" id="montoMax" placeholder="1000000" min="0">
+            </div>
+            <div class="filtro-item" style="display: flex; align-items: flex-end;">
+                <button onclick="aplicarFiltrosAvanzados()" style="padding: 8px 20px; width: auto;">
+                    <i class="fas fa-filter"></i> Aplicar Filtros
+                </button>
+            </div>
+        </div>
+        
+        <!-- Resumen de pagos -->
+        <div class="resumen-pagos" id="resumen">
+            <div class="resumen-card">
+                <div class="numero" id="totalPagos">0</div>
+                <div class="etiqueta">Total Pagos</div>
+            </div>
+            <div class="resumen-card total">
+                <div class="numero" id="totalMonto">Bs 0</div>
+                <div class="etiqueta">Monto Total</div>
+            </div>
+            <div class="resumen-card promedio">
+                <div class="numero" id="montoPromedio">Bs 0</div>
+                <div class="etiqueta">Promedio por Pago</div>
+            </div>
+            <div class="resumen-card" style="background: linear-gradient(135deg, #ec4899, #db2777);">
+                <div class="numero" id="pagoMaximo">Bs 0</div>
+                <div class="etiqueta">Pago Máximo</div>
+            </div>
+        </div>
+        
+        <!-- Lista de pagos -->
+        <div id="listado">
+            <ul id="data"></ul>
+        </div>
+    </div>
+    
+    <script src="pago_get.js"></script>
+</body>
+</html>

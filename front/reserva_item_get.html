@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ítems de Reserva - La Costanera</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles-base.css">
+    <style>
+        /* Estilos específicos para items de reserva */
+        .resumen-card {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 25px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            box-shadow: var(--shadow);
+        }
+        
+        .resumen-item {
+            text-align: center;
+            padding: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+        }
+        
+        .resumen-item .cantidad {
+            font-size: 2em;
+            font-weight: bold;
+        }
+        
+        .resumen-item .etiqueta {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .badge-cantidad {
+            background: var(--warm);
+            color: var(--dark);
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        
+        .filtros-rapidos {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        
+        .filtro-btn {
+            background: white;
+            border: 2px solid var(--accent);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        
+        .filtro-btn:hover {
+            background: var(--accent);
+        }
+        
+        .filtro-btn.activo {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>
+            <i class="fas fa-list-ul"></i>
+            Ítems de Reserva
+        </h1>
+        
+        <!-- Barra de búsqueda mejorada -->
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="🔍 Buscar por ID de reserva, paquete o cantidad...">
+            <select id="searchField">
+                <option value="todos">Todos los campos</option>
+                <option value="reserva_id">ID Reserva</option>
+                <option value="paquete_id">ID Paquete</option>
+                <option value="cantidad">Cantidad</option>
+            </select>
+            <button onclick="buscarItems()">
+                <i class="fas fa-search"></i> Buscar
+            </button>
+            <button onclick="limpiarBusqueda()" style="background: var(--accent); color: var(--dark);">
+                <i class="fas fa-times"></i> Limpiar
+            </button>
+        </div>
+        
+        <!-- Filtros rápidos -->
+        <div class="filtros-rapidos">
+            <button class="filtro-btn activo" onclick="filtrarPorCantidad('todos')">Todos</button>
+            <button class="filtro-btn" onclick="filtrarPorCantidad('1')">1 unidad</button>
+            <button class="filtro-btn" onclick="filtrarPorCantidad('2-3')">2-3 unidades</button>
+            <button class="filtro-btn" onclick="filtrarPorCantidad('4+')">4+ unidades</button>
+        </div>
+        
+        <!-- Resumen de ítems -->
+        <div class="resumen-card" id="resumen">
+            <div class="resumen-item">
+                <div class="cantidad" id="totalItems">0</div>
+                <div class="etiqueta">Total Ítems</div>
+            </div>
+            <div class="resumen-item">
+                <div class="cantidad" id="totalUnidades">0</div>
+                <div class="etiqueta">Unidades Vendidas</div>
+            </div>
+            <div class="resumen-item">
+                <div class="cantidad" id="promedioItems">0</div>
+                <div class="etiqueta">Promedio x Reserva</div>
+            </div>
+            <div class="resumen-item">
+                <div class="cantidad" id="itemsUnicos">0</div>
+                <div class="etiqueta">Paquetes Distintos</div>
+            </div>
+        </div>
+        
+        <!-- Lista de ítems -->
+        <div id="listado">
+            <ul id="data"></ul>
+        </div>
+    </div>
+    
+    <script src="reserva_item_get.js"></script>
+</body>
+</html>

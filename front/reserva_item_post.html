@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuevo Ítem de Reserva - La Costanera</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles-base.css">
+</head>
+<body>
+    <div class="container">
+        <h1>
+            <i class="fas fa-plus-circle"></i>
+            Nuevo Ítem de Reserva
+        </h1>
+        
+        <form id="FormularioData">
+            <label for="reserva_id">
+                <i class="fas fa-calendar-check"></i> ID Reserva:
+            </label>
+            <input type="number" id="reserva_id" name="reserva_id" required 
+                   placeholder="Ingrese el ID de la reserva">
+            
+            <label for="paquete_id">
+                <i class="fas fa-box"></i> ID Paquete:
+            </label>
+            <input type="number" id="paquete_id" name="paquete_id" required 
+                   placeholder="Ingrese el ID del paquete">
+            
+            <label for="cantidad">
+                <i class="fas fa-sort-numeric-up"></i> Cantidad:
+            </label>
+            <input type="number" id="cantidad" name="cantidad" required 
+                   placeholder="Cantidad de unidades" min="1" value="1">
+            
+            <div style="background: var(--light); padding: 15px; border-radius: 8px; margin: 20px 0;">
+                <p><i class="fas fa-info-circle"></i> La cantidad debe ser mayor a 0</p>
+            </div>
+            
+            <button type="submit">
+                <i class="fas fa-save"></i> Guardar Ítem
+            </button>
+        </form>
+    </div>
+    
+    <script src="reserva_item_post.js"></script>
+</body>
+</html>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservas - La Costanera</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles-base.css">
+    <style>
+        /* Estilos específicos para reservas */
+        .estado-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .estado-pendiente {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .estado-confirmada {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .estado-cancelada {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .estado-finalizada {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+        
+        .filtros-fecha {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+        
+        .filtro-fecha-item {
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        .filtro-fecha-item label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+            color: var(--dark);
+        }
+        
+        .filtro-fecha-item input {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid var(--accent);
+            border-radius: 6px;
+        }
+        
+        .resumen-reservas {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .resumen-card {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+        
+        .resumen-card .numero {
+            font-size: 2.2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .resumen-card .etiqueta {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .filtro-estados {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        
+        .estado-filtro {
+            padding: 8px 16px;
+            border: 2px solid var(--accent);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+        }
+        
+        .estado-filtro:hover {
+            background: var(--accent);
+        }
+        
+        .estado-filtro.activo {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .info-adicional {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .icono-info {
+            color: var(--primary);
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>
+            <i class="fas fa-calendar-check"></i>
+            Gestión de Reservas
+        </h1>
+        
+        <!-- Barra de búsqueda principal -->
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="🔍 Buscar por ID, cliente o usuario...">
+            <select id="searchField">
+                <option value="todos">Todos los campos</option>
+                <option value="reserva_id">ID Reserva</option>
+                <option value="cliente_id">ID Cliente</option>
+                <option value="usuario_id">ID Usuario</option>
+                <option value="estado">Estado</option>
+            </select>
+            <button onclick="buscarReservas()">
+                <i class="fas fa-search"></i> Buscar
+            </button>
+            <button onclick="limpiarBusqueda()" style="background: var(--accent); color: var(--dark);">
+                <i class="fas fa-times"></i> Limpiar
+            </button>
+        </div>
+        
+        <!-- Filtros por fecha -->
+        <div class="filtros-fecha">
+            <div class="filtro-fecha-item">
+                <label><i class="fas fa-calendar-alt"></i> Desde:</label>
+                <input type="datetime-local" id="fechaDesde">
+            </div>
+            <div class="filtro-fecha-item">
+                <label><i class="fas fa-calendar-alt"></i> Hasta:</label>
+                <input type="datetime-local" id="fechaHasta">
+            </div>
+            <div class="filtro-fecha-item" style="display: flex; align-items: flex-end;">
+                <button onclick="filtrarPorFecha()" style="padding: 8px 20px; width: auto;">
+                    <i class="fas fa-filter"></i> Filtrar
+                </button>
+            </div>
+        </div>
+        
+        <!-- Resumen de reservas -->
+        <div class="resumen-reservas" id="resumen">
+            <div class="resumen-card">
+                <div class="numero" id="totalReservas">0</div>
+                <div class="etiqueta">Total Reservas</div>
+            </div>
+            <div class="resumen-card" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                <div class="numero" id="pendientes">0</div>
+                <div class="etiqueta">Pendientes</div>
+            </div>
+            <div class="resumen-card" style="background: linear-gradient(135deg, #10b981, #059669);">
+                <div class="numero" id="confirmadas">0</div>
+                <div class="etiqueta">Confirmadas</div>
+            </div>
+            <div class="resumen-card" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+                <div class="numero" id="canceladas">0</div>
+                <div class="etiqueta">Canceladas</div>
+            </div>
+            <div class="resumen-card" style="background: linear-gradient(135deg, #6366f1, #4f46e5);">
+                <div class="numero" id="finalizadas">0</div>
+                <div class="etiqueta">Finalizadas</div>
+            </div>
+        </div>
+        
+        <!-- Filtros por estado -->
+        <div class="filtro-estados">
+            <button class="estado-filtro activo" onclick="filtrarPorEstado('todos')">Todos</button>
+            <button class="estado-filtro" onclick="filtrarPorEstado('pendiente')">⏳ Pendiente</button>
+            <button class="estado-filtro" onclick="filtrarPorEstado('confirmada')">✅ Confirmada</button>
+            <button class="estado-filtro" onclick="filtrarPorEstado('cancelada')">❌ Cancelada</button>
+            <button class="estado-filtro" onclick="filtrarPorEstado('finalizada')">🏁 Finalizada</button>
+        </div>
+        
+        <!-- Lista de reservas -->
+        <div id="listado">
+            <ul id="data"></ul>
+        </div>
+    </div>
+    
+    <script src="reserva_get.js"></script>
+</body>
+</html>

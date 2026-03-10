@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nueva Reserva - La Costanera</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles-base.css">
+    <style>
+        .info-box {
+            background: var(--light);
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        
+        .info-box i {
+            color: var(--primary);
+            margin-right: 10px;
+        }
+        
+        .fecha-actual {
+            background: var(--accent);
+            color: var(--dark);
+            padding: 8px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+        }
+        
+        /* Estilo para input de fecha */
+        input[type="date"] {
+            font-family: inherit;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>
+            <i class="fas fa-plus-circle"></i>
+            Nueva Reserva
+        </h1>
+        
+        <div class="fecha-actual">
+            <i class="fas fa-calendar"></i> 
+            Fecha actual: <span id="fechaActual"></span>
+        </div>
+        
+        <form id="FormularioData">
+            <div class="info-box">
+                <i class="fas fa-info-circle"></i>
+                Complete los datos para crear una nueva reserva
+            </div>
+            
+            <label for="cliente_id">
+                <i class="fas fa-user"></i> ID Cliente:
+            </label>
+            <input type="number" id="cliente_id" name="cliente_id" required 
+                   placeholder="Ingrese el ID del cliente" min="1">
+            
+            <label for="usuario_id">
+                <i class="fas fa-user-tie"></i> ID Usuario:
+            </label>
+            <input type="number" id="usuario_id" name="usuario_id" required 
+                   placeholder="Ingrese el ID del usuario" min="1">
+            
+            <label for="fecha_reserva">
+                <i class="fas fa-calendar"></i> Fecha de Reserva:
+            </label>
+            <input type="date" id="fecha_reserva" name="fecha_reserva" required>
+            
+            <label for="estado">
+                <i class="fas fa-tag"></i> Estado:
+            </label>
+            <select id="estado" name="estado" required>
+                <option value="pendiente">⏳ Pendiente</option>
+                <option value="confirmada">✅ Confirmada</option>
+                <option value="cancelada">❌ Cancelada</option>
+                <option value="finalizada">🏁 Finalizada</option>
+            </select>
+            
+            <div class="info-box" style="margin-top: 30px;">
+                <i class="fas fa-lightbulb"></i>
+                <strong>Nota:</strong> La fecha se registrará automáticamente si no se especifica
+            </div>
+            
+            <button type="submit">
+                <i class="fas fa-save"></i> Guardar Reserva
+            </button>
+        </form>
+    </div>
+    
+    <script src="reserva_post.js"></script>
+</body>
+</html>

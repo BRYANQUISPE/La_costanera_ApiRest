@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprobantes - La Costanera</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles-base.css">
+    <style>
+        /* Estilos específicos para comprobantes */
+        .comprobante-badge {
+            background: linear-gradient(135deg, var(--primary), var(--dark));
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .resumen-comprobantes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .resumen-card {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .resumen-card::before {
+            content: "📄";
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            font-size: 80px;
+            opacity: 0.2;
+            transform: rotate(15deg);
+        }
+        
+        .resumen-card .numero {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .resumen-card .etiqueta {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .resumen-card.hoy {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .resumen-card.ayer {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        }
+        
+        .filtros-fecha {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            align-items: flex-end;
+        }
+        
+        .filtro-item {
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        .filtro-item label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+            color: var(--dark);
+            font-weight: 600;
+        }
+        
+        .filtro-item input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 2px solid var(--accent);
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .filtros-rapidos {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+        
+        .filtro-rapido-btn {
+            padding: 8px 16px;
+            border: 2px solid var(--accent);
+            border-radius: 25px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        
+        .filtro-rapido-btn:hover {
+            background: var(--accent);
+        }
+        
+        .filtro-rapido-btn.activo {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .info-pago {
+            font-size: 0.9em;
+            color: var(--primary);
+            margin-top: 5px;
+        }
+        
+        .info-pago i {
+            margin-right: 5px;
+        }
+        
+        .fecha-emision {
+            background: var(--light);
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.85em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>
+            <i class="fas fa-file-invoice"></i>
+            Gestión de Comprobantes
+        </h1>
+        
+        <!-- Barra de búsqueda principal -->
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="🔍 Buscar por ID comprobante o ID pago...">
+            <select id="searchField">
+                <option value="todos">Todos los campos</option>
+                <option value="comprobante_id">ID Comprobante</option>
+                <option value="pago_id">ID Pago</option>
+            </select>
+            <button onclick="buscarComprobantes()">
+                <i class="fas fa-search"></i> Buscar
+            </button>
+            <button onclick="limpiarBusqueda()" style="background: var(--accent); color: var(--dark);">
+                <i class="fas fa-times"></i> Limpiar
+            </button>
+        </div>
+        
+        <!-- Filtros por fecha -->
+        <div class="filtros-fecha">
+            <div class="filtro-item">
+                <label><i class="fas fa-calendar-alt"></i> Fecha Desde:</label>
+                <input type="date" id="fechaDesde">
+            </div>
+            <div class="filtro-item">
+                <label><i class="fas fa-calendar-alt"></i> Fecha Hasta:</label>
+                <input type="date" id="fechaHasta">
+            </div>
+            <div class="filtro-item" style="display: flex; align-items: flex-end;">
+                <button onclick="aplicarFiltrosFecha()" style="padding: 8px 20px; width: auto;">
+                    <i class="fas fa-filter"></i> Filtrar por Fecha
+                </button>
+            </div>
+        </div>
+        
+        <!-- Filtros rápidos de fecha -->
+        <div class="filtros-rapidos">
+            <button class="filtro-rapido-btn activo" onclick="filtrarRapido('todos')">Todos</button>
+            <button class="filtro-rapido-btn" onclick="filtrarRapido('hoy')">📅 Hoy</button>
+            <button class="filtro-rapido-btn" onclick="filtrarRapido('ayer')">📅 Ayer</button>
+            <button class="filtro-rapido-btn" onclick="filtrarRapido('semana')">📅 Esta semana</button>
+            <button class="filtro-rapido-btn" onclick="filtrarRapido('mes')">📅 Este mes</button>
+        </div>
+        
+        <!-- Resumen de comprobantes -->
+        <div class="resumen-comprobantes" id="resumen">
+            <div class="resumen-card">
+                <div class="numero" id="totalComprobantes">0</div>
+                <div class="etiqueta">Total Comprobantes</div>
+            </div>
+            <div class="resumen-card hoy">
+                <div class="numero" id="comprobantesHoy">0</div>
+                <div class="etiqueta">Emitidos Hoy</div>
+            </div>
+            <div class="resumen-card ayer">
+                <div class="numero" id="comprobantesAyer">0</div>
+                <div class="etiqueta">Emitidos Ayer</div>
+            </div>
+            <div class="resumen-card" style="background: linear-gradient(135deg, #ec4899, #db2777);">
+                <div class="numero" id="comprobantesMes">0</div>
+                <div class="etiqueta">Este Mes</div>
+            </div>
+        </div>
+        
+        <!-- Lista de comprobantes -->
+        <div id="listado">
+            <ul id="data"></ul>
+        </div>
+    </div>
+    
+    <script src="comprobante_get.js"></script>
+</body>
+</html>

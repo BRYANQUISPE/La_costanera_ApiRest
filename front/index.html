@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Costanera - Agencia de Turismo</title>
+    <style>
+        /* ===== VARIABLES GLOBALES ===== */
+        :root {
+            --primary: #2c7da0;
+            --secondary: #61a5c2;
+            --accent: #a9d6e5;
+            --warm: #f9c74f;
+            --dark: #1e4a6f;
+            --light: #f8f9fa;
+            --success: #2a9d8f;
+            --text: #2b2d42;
+            --shadow: 0 10px 30px rgba(0,0,0,0.1);
+            --shadow-hover: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Poppins', sans-serif;
+            min-height: 100vh;
+            position: relative;
+            color: var(--text);
+        }
+
+        /* ===== FONDO CON IMAGEN DE PLAYA ===== */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            filter: brightness(0.4) blur(2px);
+            z-index: -2;
+        }
+
+        /* Capa de color overlay */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(44,125,160,0.7), rgba(30,74,111,0.8));
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 30px 30px 30px 30px;
+            padding: 40px 30px;
+            margin-bottom: 40px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .header h1 {
+            font-size: 3.5em;
+            color: var(--primary);
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header h1 i {
+            margin-right: 15px;
+            color: var(--warm);
+        }
+
+        .header p {
+            font-size: 1.3em;
+            color: var(--dark);
+            font-weight: 300;
+        }
+
+        .header .badge {
+            display: inline-block;
+            background: var(--warm);
+            color: var(--dark);
+            padding: 8px 20px;
+            border-radius: 30px;
+            margin-top: 15px;
+            font-weight: 600;
+            font-size: 0.9em;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* ===== MENÚ PRINCIPAL ===== */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .menu-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s;
+            border: 1px solid rgba(255,255,255,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu-section:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .menu-section::before {
+            content: "✈️";
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            font-size: 100px;
+            opacity: 0.1;
+            transform: rotate(15deg);
+        }
+
+        .menu-section h3 {
+            color: var(--primary);
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--accent);
+            position: relative;
+        }
+
+        .menu-section h3 i {
+            margin-right: 10px;
+            color: var(--warm);
+        }
+
+        .menu-section a {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            margin: 8px 0;
+            color: var(--text);
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s;
+            background: var(--light);
+            font-weight: 500;
+        }
+
+        .menu-section a i {
+            margin-right: 12px;
+            font-size: 1.2em;
+            width: 25px;
+            color: var(--primary);
+        }
+
+        .menu-section a:hover {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .menu-section a:hover i {
+            color: white;
+        }
+
+        /* ===== IFRAME ===== */
+        .iframe-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255,255,255,0.2);
+            margin-top: 30px;
+        }
+
+        .iframe-container h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .iframe-container h2 i {
+            color: var(--warm);
+        }
+
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: none;
+            border-radius: 15px;
+            background: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        /* ===== ELEMENTOS DECORATIVOS ===== */
+        .floating-icon {
+            position: fixed;
+            font-size: 100px;
+            opacity: 0.1;
+            pointer-events: none;
+            z-index: -1;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        .icon-1 {
+            top: 10%;
+            left: 5%;
+            animation-delay: 0s;
+        }
+
+        .icon-2 {
+            bottom: 10%;
+            right: 5%;
+            animation-delay: 2s;
+        }
+
+        .icon-3 {
+            top: 20%;
+            right: 10%;
+            animation-delay: 4s;
+        }
+
+        /* ===== BARRA DE ESTADO ===== */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(5px);
+            padding: 10px 20px;
+            border-radius: 50px;
+            margin-bottom: 30px;
+            color: white;
+            font-size: 0.9em;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-item i {
+            color: var(--warm);
+        }
+
+        .online-dot {
+            width: 10px;
+            height: 10px;
+            background: #2ecc71;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.2em;
+            }
+            
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .floating-icon {
+                display: none;
+            }
+            
+            iframe {
+                height: 500px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Iconos flotantes decorativos -->
+    <div class="floating-icon icon-1">🏖️</div>
+    <div class="floating-icon icon-2">🌴</div>
+    <div class="floating-icon icon-3">🏝️</div>
+
+    <div class="container">
+        <!-- Barra de estado -->
+        <div class="status-bar">
+            <div class="status-item">
+                <span class="online-dot"></span>
+                <span>Sistema Online</span>
+            </div>
+            <div class="status-item">
+                <i class="fas fa-database"></i>
+                <span>14 Tablas Activas</span>
+            </div>
+            <div class="status-item">
+                <i class="fas fa-clock"></i>
+                <span id="reloj"></span>
+            </div>
+        </div>
+
+        <!-- Header con imagen de fondo -->
+        <div class="header">
+            <h1>
+                <i class="fas fa-umbrella-beach"></i> 
+                La Costanera
+            </h1>
+            <p>Agencia de Turismo & Sistema de Gestión</p>
+            <div class="badge">
+                <i class="fas fa-check-circle"></i> 14 Módulos Integrados
+            </div>
+        </div>
+        
+        <!-- Menú principal en grid -->
+        <div class="menu-grid">
+            <!-- CLIENTES -->
+            <div class="menu-section">
+                <h3><i class="fas fa-users"></i> Clientes</h3>
+                <a href="#" onclick="cargarPagina('cliente_get.html')">
+                    <i class="fas fa-list"></i> Ver Clientes
+                </a>
+                <a href="#" onclick="cargarPagina('cliente_post.html')">
+                    <i class="fas fa-plus-circle"></i> Nuevo Cliente
+                </a>
+            </div>
+            
+            <!-- PROVEEDORES -->
+            <div class="menu-section">
+                <h3><i class="fas fa-building"></i> Proveedores</h3>
+                <a href="#" onclick="cargarPagina('proveedor_get.html')">
+                    <i class="fas fa-list"></i> Ver Proveedores
+                </a>
+                <a href="#" onclick="cargarPagina('proveedor_post.html')">
+                    <i class="fas fa-plus-circle"></i> Nuevo Proveedor
+                </a>
+            </div>
+            
+            <!-- HOTELES -->
+            <div class="menu-section">
+                <h3><i class="fas fa-hotel"></i> Hoteles</h3>
+                <a href="#" onclick="cargarPagina('hotel_get.html')">
+                    <i class="fas fa-list"></i> Ver Hoteles
+                </a>
+                <a href="#" onclick="cargarPagina('hotel_post.html')">
+                    <i class="fas fa-plus-circle"></i> Nuevo Hotel
+                </a>
+            </div>
+            
+            <!-- DESTINOS -->
+            <div class="menu-section">
+                <h3><i class="fas fa-map-marked-alt"></i> Destinos</h3>
+                <a href="#" onclick="cargarPagina('destino_get.html')">
+                    <i class="fas fa-list"></i> Ver Destinos
+                </a>
+                <a href="#" onclick="cargarPagina('destino_post.html')">
+                    <i class="fas fa-plus-circle"></i> Nuevo Destino
+                </a>
+            </div>
+            
+            <!-- PAQUETES -->
+            <div class="menu-section">
+                <h3><i class="fas fa-box"></i> Paquetes</h3>
+                <a href="#" onclick="cargarPagina('paquete_get.html')">
+                    <i class="fas fa-list"></i> Ver Paquetes
+                </a>
+                <a href="#" onclick="cargarPagina('paquete_post.html')">
+                    <i class="fas fa-plus-circle"></i> Nuevo Paquete
+                </a>
+            </div>
+            
+            <!-- COMPONENTES -->
+            <div class="menu-section">
+                <h3><i class="fas fa-puzzle-piece"></i> Componentes</h3>
+                <a href="#" onclick="cargarPagina('componente_get.html')">
+                    <i class="fas fa-list"></i> Ver Componentes
+                </a>
+                <a href="#" onclick="cargarPagina('componente_post.html')">
+                    <i class="fas fa-plus-circle"></i> Nuevo Componente
+                </a>
+            </div>
+            
+            <!-- RESERVAS -->
+            <div class="menu-section">
+                <h3><i class="fas fa-calendar-check"></i> Reservas</h3>
+                <a href="#" onclick="cargarPagina('reserva_get.html')">
+                    <i class="fas fa-list"></i> Ver Reservas
+                </a>
+                <a href="#" onclick="cargarPagina('reserva_post.html')">
+                    <i class="fas fa-plus-circle"></i> Nueva Reserva
+                </a>
+            </div>
+            
+            <!-- ITEMS RESERVA -->
+            <div class="menu-section">
+                <h3><i class="fas fa-list-ul"></i> Items Reserva</h3>
+                <a href="#" onclick="cargarPagina('reserva_item_get.html')">
+                    <i class="fas fa-list"></i> Ver Items
+                </a>
+                <a href="#" onclick="cargarPagina('reserva_item_post.html')">
+                    <i class="fas fa-plus-circle"></i> Nuevo Item
+                </a>
+            </div>
+            
+            <!-- PAGOS -->
+            <div class="menu-section">
+                <h3><i class="fas fa-credit-card"></i> Pagos</h3>
+                <a href="#" onclick="cargarPagina('pago_get.html')">
+                    <i class="fas fa-list"></i> Ver Pagos
+                </a>
+                <a href="#" onclick="cargarPagina('pago_post.html')">
+                    <i class="fas fa-plus-circle"></i> Nuevo Pago
+                </a>
+            </div>
+            
+            <!-- COMPROBANTES -->
+            <div class="menu-section">
+                <h3><i class="fas fa-file-invoice"></i> Comprobantes</h3>
+                <a href="#" onclick="cargarPagina('comprobante_get.html')">
+                    <i class="fas fa-list"></i> Ver Comprobantes
+                </a>
+                <a href="#" onclick="cargarPagina('comprobante_post.html')">
+                    <i class="fas fa-plus-circle"></i> Nuevo Comprobante
+                </a>
+            </div>
+            
+            <!-- USUARIOS -->
+            <div class="menu-section">
+                <h3><i class="fas fa-user-circle"></i> Usuarios</h3>
+                <a href="#" onclick="cargarPagina('usuario_get.html')">
+                    <i class="fas fa-list"></i> Ver Usuarios
+                </a>
+                <a href="#" onclick="cargarPagina('usuario_post.html')">
+                    <i class="fas fa-plus-circle"></i> Nuevo Usuario
+                </a>
+            </div>
+            
+            <!-- ROLES -->
+            <div class="menu-section">
+                <h3><i class="fas fa-key"></i> Roles</h3>
+                <a href="#" onclick="cargarPagina('rol_get.html')">
+                    <i class="fas fa-list"></i> Ver Roles
+                </a>
+                <a href="#" onclick="cargarPagina('rol_post.html')">
+                    <i class="fas fa-plus-circle"></i> Nuevo Rol
+                </a>
+            </div>
+            
+            <!-- USUARIO ROL -->
+            <div class="menu-section">
+                <h3><i class="fas fa-user-tag"></i> Usuario Rol</h3>
+                <a href="#" onclick="cargarPagina('usuario_rol_get.html')">
+                    <i class="fas fa-list"></i> Ver Asignaciones
+                </a>
+                <a href="#" onclick="cargarPagina('usuario_rol_post.html')">
+                    <i class="fas fa-plus-circle"></i> Nueva Asignación
+                </a>
+            </div>
+            
+            <!-- PERSONAL -->
+            <div class="menu-section">
+                <h3><i class="fas fa-user-tie"></i> Personal</h3>
+                <a href="#" onclick="cargarPagina('personal_get.html')">
+                    <i class="fas fa-list"></i> Ver Personal
+                </a>
+                <a href="#" onclick="cargarPagina('personal_post.html')">
+                    <i class="fas fa-plus-circle"></i> Nuevo Personal
+                </a>
+            </div>
+        </div>
+        
+        <!-- Contenedor del iframe con título -->
+        <div class="iframe-container">
+            <h2>
+                <i class="fas fa-window-maximize"></i>
+                <span id="tituloActual">Visualizador de Módulos</span>
+            </h2>
+            <iframe id="contenido" src="about:blank"></iframe>
+        </div>
+    </div>
+
+    <!-- Font Awesome para iconos -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    
+    <script>
+        function cargarPagina(url) {
+            const iframe = document.getElementById('contenido');
+            iframe.src = url;
+            
+            // Actualizar título
+            const nombrePagina = url.replace('.html', '').replace('_', ' ').toUpperCase();
+            document.getElementById('tituloActual').textContent = nombrePagina;
+        }
+
+        // Reloj en tiempo real
+        function actualizarReloj() {
+            const ahora = new Date();
+            const opciones = { 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit',
+                hour12: true 
+            };
+            document.getElementById('reloj').textContent = ahora.toLocaleTimeString('es-ES', opciones);
+        }
+        setInterval(actualizarReloj, 1000);
+        actualizarReloj();
+
+        console.log('🚀 Sistema La Costanera iniciado correctamente');
+    </script>
+</body>
+</html>
