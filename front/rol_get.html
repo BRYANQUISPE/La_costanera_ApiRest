@@ -1,62 +1,226 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Roles</title>
+    <title>Roles - La Costanera</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles-base.css">
+    <style>
+        /* Estilos específicos para roles */
+        .rol-card {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        
+        .rol-card::before {
+            content: "🔑";
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            font-size: 80px;
+            opacity: 0.2;
+            transform: rotate(15deg);
+        }
+        
+        .rol-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(44,125,160,0.3);
+        }
+        
+        .rol-nombre {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .rol-nombre i {
+            font-size: 1.2em;
+            color: var(--warm);
+        }
+        
+        .rol-stats {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .stat-item {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+        
+        .stat-label {
+            font-size: 0.8em;
+            opacity: 0.9;
+        }
+        
+        .resumen-roles {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .resumen-card {
+            background: linear-gradient(135deg, var(--primary), var(--dark));
+            color: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .resumen-card::before {
+            content: "📊";
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            font-size: 80px;
+            opacity: 0.2;
+            transform: rotate(15deg);
+        }
+        
+        .resumen-card .numero {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .resumen-card .etiqueta {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .usuarios-lista {
+            margin-top: 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 10px;
+        }
+        
+        .usuario-tag {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 3px 10px;
+            border-radius: 15px;
+            margin: 3px;
+            font-size: 0.85em;
+        }
+        
+        .acciones-rol {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: flex-end;
+        }
+        
+        .btn-editar {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-editar:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .btn-eliminar {
+            background: rgba(231, 76, 60, 0.8);
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-eliminar:hover {
+            background: #c0392b;
+        }
+    </style>
 </head>
-<style>
-    body {
-        background-color: yellow;
-    }
-    #data {
-    list-style: none;
-    padding: 0;
-    max-width: 600px;
-    margin: 20px auto;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-}
-
-#data li {
-    background: white;
-    margin-bottom: 12px;
-    padding: 16px;
-    border-left: 4px solid #007bff;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    transition: box-shadow 0.3s ease;
-}
-
-#data li:hover {
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-#data li p {
-    margin: 6px 0;
-    color: #2c3e50;
-    display: flex;
-    justify-content: space-between;
-    border-bottom: 1px dotted #ecf0f1;
-    padding-bottom: 4px;
-}
-
-#data li p:after {
-    content: attr(data-value);
-    font-weight: 500;
-    color: #007bff;
-}
-</style>
 <body>
-    <div id="listado">
-        <ul id="data">
-
-        </ul>
-       
+    <div class="container">
+        <h1>
+            <i class="fas fa-key"></i>
+            Gestión de Roles
+        </h1>
+        
+        <!-- Barra de búsqueda principal -->
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="🔍 Buscar rol por nombre...">
+            <button onclick="buscarRoles()">
+                <i class="fas fa-search"></i> Buscar
+            </button>
+            <button onclick="limpiarBusqueda()" style="background: var(--accent); color: var(--dark);">
+                <i class="fas fa-times"></i> Limpiar
+            </button>
+        </div>
+        
+        <!-- Resumen de roles -->
+        <div class="resumen-roles" id="resumen">
+            <div class="resumen-card">
+                <div class="numero" id="totalRoles">0</div>
+                <div class="etiqueta">Total Roles</div>
+            </div>
+            <div class="resumen-card" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                <div class="numero" id="totalUsuarios">0</div>
+                <div class="etiqueta">Usuarios con Roles</div>
+            </div>
+            <div class="resumen-card" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+                <div class="numero" id="promedioUsuarios">0</div>
+                <div class="etiqueta">Promedio x Rol</div>
+            </div>
+            <div class="resumen-card" style="background: linear-gradient(135deg, #ec4899, #db2777);">
+                <div class="numero" id="rolMasUsado">-</div>
+                <div class="etiqueta">Rol Más Usado</div>
+            </div>
+        </div>
+        
+        <!-- Lista de roles -->
+        <div id="listado">
+            <div id="data" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;"></div>
+        </div>
     </div>
-    <ul>
-  
-</ul>
-<script src="rol_get.js">
     
-</script>
+    <!-- Modal para editar rol -->
+    <div id="modalEditar" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="cerrarModal()">&times;</span>
+            <h3 id="modalTitulo">Editar Rol</h3>
+            <form id="modalForm" onsubmit="guardarRol(event)">
+                <input type="hidden" id="edit_rol_id">
+                <div class="form-group">
+                    <label for="edit_nombre">Nombre del Rol:</label>
+                    <input type="text" id="edit_nombre" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+            </form>
+        </div>
+    </div>
+    
+    <script src="rol_get.js"></script>
 </body>
 </html>

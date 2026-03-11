@@ -1,62 +1,191 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personal</title>
+    <title>Personal - La Costanera</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles-base.css">
+    <style>
+        /* Estilos específicos para personal */
+        .cargo-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        
+        .cargo-admin {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+        
+        .cargo-vendedor {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+        }
+        
+        .cargo-gerente {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: white;
+        }
+        
+        .cargo-otro {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            color: white;
+        }
+        
+        .resumen-personal {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .resumen-card {
+            background: linear-gradient(135deg, var(--primary), var(--dark));
+            color: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .resumen-card::before {
+            content: "👔";
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            font-size: 80px;
+            opacity: 0.2;
+            transform: rotate(15deg);
+        }
+        
+        .resumen-card .numero {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .resumen-card .etiqueta {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .filtros-cargo {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+            padding: 15px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+        
+        .cargo-filtro {
+            padding: 8px 16px;
+            border: 2px solid var(--accent);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+            font-size: 14px;
+        }
+        
+        .cargo-filtro:hover {
+            background: var(--accent);
+        }
+        
+        .cargo-filtro.activo {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .usuario-info {
+            font-size: 0.85em;
+            color: var(--primary);
+            margin-top: 5px;
+            padding: 3px 8px;
+            background: var(--light);
+            border-radius: 15px;
+            display: inline-block;
+        }
+        
+        .usuario-info i {
+            margin-right: 5px;
+            color: var(--warm);
+        }
+        
+        .telefono-icon {
+            color: var(--success);
+            margin-right: 5px;
+        }
+    </style>
 </head>
-<style>
-    body {
-        background-color: yellow;
-    }
-    #data {
-    list-style: none;
-    padding: 0;
-    max-width: 600px;
-    margin: 20px auto;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-}
-
-#data li {
-    background: white;
-    margin-bottom: 12px;
-    padding: 16px;
-    border-left: 4px solid #007bff;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    transition: box-shadow 0.3s ease;
-}
-
-#data li:hover {
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-#data li p {
-    margin: 6px 0;
-    color: #2c3e50;
-    display: flex;
-    justify-content: space-between;
-    border-bottom: 1px dotted #ecf0f1;
-    padding-bottom: 4px;
-}
-
-#data li p:after {
-    content: attr(data-value);
-    font-weight: 500;
-    color: #007bff;
-}
-</style>
 <body>
-    <div id="listado">
-        <ul id="data">
-
-        </ul>
-       
+    <div class="container">
+        <h1>
+            <i class="fas fa-user-tie"></i>
+            Gestión de Personal
+        </h1>
+        
+        <!-- Barra de búsqueda principal -->
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="🔍 Buscar por nombre, cargo o teléfono...">
+            <select id="searchField">
+                <option value="todos">Todos los campos</option>
+                <option value="nombres">Nombres</option>
+                <option value="apellidos">Apellidos</option>
+                <option value="cargo">Cargo</option>
+                <option value="telefono">Teléfono</option>
+            </select>
+            <button onclick="buscarPersonal()">
+                <i class="fas fa-search"></i> Buscar
+            </button>
+            <button onclick="limpiarBusqueda()" style="background: var(--accent); color: var(--dark);">
+                <i class="fas fa-times"></i> Limpiar
+            </button>
+        </div>
+        
+        <!-- Filtros por cargo -->
+        <div class="filtros-cargo">
+            <button class="cargo-filtro activo" onclick="filtrarPorCargo('todos')">Todos</button>
+            <button class="cargo-filtro" onclick="filtrarPorCargo('admin')">👑 Admin</button>
+            <button class="cargo-filtro" onclick="filtrarPorCargo('vendedor')">💼 Vendedor</button>
+            <button class="cargo-filtro" onclick="filtrarPorCargo('gerente')">📊 Gerente</button>
+            <button class="cargo-filtro" onclick="filtrarPorCargo('otro')">🔹 Otros</button>
+        </div>
+        
+        <!-- Resumen de personal -->
+        <div class="resumen-personal" id="resumen">
+            <div class="resumen-card">
+                <div class="numero" id="totalPersonal">0</div>
+                <div class="etiqueta">Total Personal</div>
+            </div>
+            <div class="resumen-card" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                <div class="numero" id="conUsuario">0</div>
+                <div class="etiqueta">Con Usuario</div>
+            </div>
+            <div class="resumen-card" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+                <div class="numero" id="sinUsuario">0</div>
+                <div class="etiqueta">Sin Usuario</div>
+            </div>
+            <div class="resumen-card" style="background: linear-gradient(135deg, #ec4899, #db2777);">
+                <div class="numero" id="cargosDistintos">0</div>
+                <div class="etiqueta">Cargos Distintos</div>
+            </div>
+        </div>
+        
+        <!-- Lista de personal -->
+        <div id="listado">
+            <ul id="data"></ul>
+        </div>
     </div>
-    <ul>
-  
-</ul>
-<script src="personal_get.js">
     
-</script>
+    <script src="personal_get.js"></script>
 </body>
 </html>

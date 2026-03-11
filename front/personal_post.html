@@ -1,35 +1,152 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Insertar Nuevo Personal</title>
+    <title>Nuevo Personal - La Costanera</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles-base.css">
+    <style>
+        .info-box {
+            background: var(--light);
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        
+        .info-box i {
+            color: var(--primary);
+            margin-right: 10px;
+        }
+        
+        .cargo-sugerido {
+            background: #e8f5e9;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .cargo-sugerido i {
+            color: var(--success);
+            font-size: 1.2em;
+        }
+        
+        .cargos-comunes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .cargo-btn {
+            padding: 10px;
+            border: 2px solid var(--accent);
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        
+        .cargo-btn:hover {
+            background: var(--accent);
+        }
+        
+        .cargo-btn.seleccionado {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .usuario-opcional {
+            background: var(--light);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .usuario-opcional h4 {
+            color: var(--dark);
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Formulario de Personal</h1>
-    <form name="FormularioData">
-    <label for="usuario_id">ID del usuario:</label><br>
-    <textarea id="usuario_id" name="usuario_id" rows="2" cols="40"></textarea>
-    <br><br>
-    <label for="nombres">Nombres:</label><br>
-    <textarea id="nombres" name="nombres" rows="2" cols="40"></textarea>
-    <br><br>
-    <label for="apellidos">Apellidos:</label><br>
-    <textarea id="apellidos" name="apellidos" rows="2" cols="40"></textarea>
-    <br><br>
-    <label for="cargo">Cargo:</label><br>
-    <textarea id="cargo" name="cargo" rows="2" cols="40"></textarea>
-    <br><br>
-    <label for="telefono">Telefono:</label><br>
-    <textarea id="telefono" name="telefono" rows="2" cols="40"></textarea>
-    <br><br>
+    <div class="container">
+        <h1>
+            <i class="fas fa-user-plus"></i>
+            Nuevo Personal
+        </h1>
+        
+        <form id="FormularioData">
+            <div class="info-box">
+                <i class="fas fa-info-circle"></i>
+                Complete los datos para registrar nuevo personal
+            </div>
+            
+            <label for="nombres">
+                <i class="fas fa-user"></i> Nombres:
+            </label>
+            <input type="text" id="nombres" name="nombres" required 
+                   placeholder="Ingrese los nombres">
+            
+            <label for="apellidos">
+                <i class="fas fa-user"></i> Apellidos:
+            </label>
+            <input type="text" id="apellidos" name="apellidos" required 
+                   placeholder="Ingrese los apellidos">
+            
+            <label for="cargo">
+                <i class="fas fa-briefcase"></i> Cargo:
+            </label>
+            <input type="text" id="cargo" name="cargo" required 
+                   placeholder="Ej: Administrador, Vendedor, Gerente">
+            
+            <!-- Cargos comunes para selección rápida -->
+            <div class="cargos-comunes">
+                <button type="button" class="cargo-btn" onclick="seleccionarCargo('Administrador')">👑 Administrador</button>
+                <button type="button" class="cargo-btn" onclick="seleccionarCargo('Vendedor')">💼 Vendedor</button>
+                <button type="button" class="cargo-btn" onclick="seleccionarCargo('Gerente')">📊 Gerente</button>
+                <button type="button" class="cargo-btn" onclick="seleccionarCargo('Recepcionista')">📞 Recepcionista</button>
+                <button type="button" class="cargo-btn" onclick="seleccionarCargo('Guía Turístico')">🗺️ Guía Turístico</button>
+            </div>
+            
+            <label for="telefono">
+                <i class="fas fa-phone"></i> Teléfono:
+            </label>
+            <input type="number" id="telefono" name="telefono" required 
+                   placeholder="Ingrese el número de teléfono">
+            
+            <!-- Sección opcional de usuario -->
+            <div class="usuario-opcional">
+                <h4><i class="fas fa-user-circle"></i> Asociar a Usuario (Opcional)</h4>
+                
+                <label for="usuario_id">
+                    <i class="fas fa-id-card"></i> ID Usuario:
+                </label>
+                <input type="number" id="usuario_id" name="usuario_id" 
+                       placeholder="ID del usuario (dejar vacío si no tiene)">
+                
+                <p style="font-size: 0.9em; color: #666; margin-top: 10px;">
+                    <i class="fas fa-info-circle"></i> Si el personal tiene acceso al sistema, asocie su ID de usuario.
+                </p>
+            </div>
+            
+            <div class="info-box" style="margin-top: 30px;">
+                <i class="fas fa-lightbulb"></i>
+                <strong>Nota:</strong> El teléfono es obligatorio para contacto
+            </div>
+            
+            <button type="submit">
+                <i class="fas fa-save"></i> Registrar Personal
+            </button>
+        </form>
+    </div>
     
-    
-</select>
-
-    <br><br>
-    <button id="btnGuardar" type="submit">Guardar</button>
-</form>
-<script src="personal_post.js"></script>
+    <script src="personal_post.js"></script>
 </body>
 </html>

@@ -1,26 +1,159 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Insertar Nuevo Usuario</title>
+    <title>Nuevo Usuario - La Costanera</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles-base.css">
+    <style>
+        .info-box {
+            background: var(--light);
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        
+        .info-box i {
+            color: var(--primary);
+            margin-right: 10px;
+        }
+        
+        .password-requisitos {
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        
+        .password-requisitos ul {
+            margin-left: 20px;
+            color: var(--dark);
+        }
+        
+        .password-requisitos li {
+            margin: 5px 0;
+        }
+        
+        .password-requisitos i {
+            color: var(--success);
+            margin-right: 8px;
+        }
+        
+        .password-strength {
+            height: 5px;
+            background: #e0e0e0;
+            border-radius: 5px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        
+        .strength-bar {
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s, background-color 0.3s;
+        }
+        
+        .strength-text {
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+        
+        .rol-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+            padding: 10px;
+            background: var(--light);
+            border-radius: 8px;
+        }
+        
+        .rol-checkbox input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin: 0;
+        }
+        
+        .personal-sugerencia {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+    </style>
 </head>
 <body>
-    <h1>Formulario de Usuario</h1>
-    <form name="FormularioData">
-    <label for="nombre_usuario">Nombre de usuario:</label><br>
-    <textarea id="nombre_usuario" name="nombre_usuario" rows="2" cols="40"></textarea>
-    <br><br>
-    <label for="hash_password">Contraseña:</label><br>
-    <textarea id="hash_password" name="hash_password" rows="2" cols="40"></textarea>
-    <br><br>
+    <div class="container">
+        <h1>
+            <i class="fas fa-user-plus"></i>
+            Nuevo Usuario
+        </h1>
+        
+        <form id="FormularioData">
+            <div class="info-box">
+                <i class="fas fa-info-circle"></i>
+                Complete los datos para crear un nuevo usuario
+            </div>
+            
+            <label for="nombre_usuario">
+                <i class="fas fa-user"></i> Nombre de Usuario:
+            </label>
+            <input type="text" id="nombre_usuario" name="nombre_usuario" required 
+                   placeholder="Ej: jperez, admin, vendedor1" minlength="3">
+            
+            <label for="hash_password">
+                <i class="fas fa-lock"></i> Contraseña:
+            </label>
+            <input type="password" id="hash_password" name="hash_password" required 
+                   placeholder="Ingrese una contraseña segura" minlength="6">
+            
+            <!-- Indicador de fortaleza de contraseña -->
+            <div class="password-strength">
+                <div class="strength-bar" id="strengthBar"></div>
+            </div>
+            <div class="strength-text" id="strengthText">Ingrese una contraseña</div>
+            
+            <!-- Requisitos de contraseña -->
+            <div class="password-requisitos">
+                <strong>Requisitos de seguridad:</strong>
+                <ul>
+                    <li><i class="fas fa-check-circle"></i> Mínimo 6 caracteres</li>
+                    <li><i class="fas fa-check-circle"></i> Al menos una mayúscula</li>
+                    <li><i class="fas fa-check-circle"></i> Al menos un número</li>
+                </ul>
+            </div>
+            
+            <!-- Asignación de roles (opcional) -->
+            <div class="info-box" style="margin-top: 20px;">
+                <i class="fas fa-tags"></i>
+                Asignación de Roles (Opcional)
+            </div>
+            
+            <div id="rolesContainer">
+                <!-- Los roles se cargarán dinámicamente -->
+                <p>Cargando roles disponibles...</p>
+            </div>
+            
+            <!-- Sugerencia de personal -->
+            <div class="personal-sugerencia" id="personalSugerencia" style="display: none;">
+                <i class="fas fa-lightbulb"></i>
+                <span id="sugerenciaTexto"></span>
+            </div>
+            
+            <div class="info-box" style="margin-top: 30px;">
+                <i class="fas fa-lightbulb"></i>
+                <strong>Nota:</strong> Guarde la contraseña en un lugar seguro
+            </div>
+            
+            <button type="submit">
+                <i class="fas fa-save"></i> Crear Usuario
+            </button>
+        </form>
+    </div>
     
-    
-</select>
-
-    <br><br>
-    <button id="btnGuardar" type="submit">Guardar</button>
-</form>
-<script src="usuario_post.js"></script>
+    <script src="usuario_post.js"></script>
 </body>
 </html>
